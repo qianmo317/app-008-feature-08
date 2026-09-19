@@ -125,3 +125,27 @@ export function roomProgress(task: MoveTask, room: string): { total: number; unp
     damaged: boxes.filter((b) => b.status === 'damaged').length,
   };
 }
+
+// 手动校准的总调整量（正=多，负=少）
+export function adjustmentTotal(task: MoveTask): number {
+  return (task.countAdjustments ?? []).reduce((sum, a) => sum + a.delta, 0);
+}
+
+// 校准后的总箱数 = 登记箱条数 + 手动调整量
+export function adjustedBoxCount(task: MoveTask): number {
+  return task.boxes.length + adjustmentTotal(task);
+}
+
+// 卸货完成：所有箱子都到了终态（已拆箱/破损/缺失）
+export function isFullyUnloaded(task: MoveTask): boolean {
+  return (
+    task.boxes.length > 0 &&
+    task.boxes.every((b) => b.status === 'unpacked' || b.status === 'damaged' || b.status === 'missing')
+  );
+}
+
+export function formatTime(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}

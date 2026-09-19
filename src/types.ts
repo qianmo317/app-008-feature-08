@@ -16,6 +16,13 @@ export type Box = {
   updatedAt: number;
 };
 
+export type CountAdjustment = {
+  id: string;
+  delta: number; // 正数=加箱，负数=减箱
+  reason: string;
+  createdAt: number;
+};
+
 export type MoveTask = {
   id: string;
   title: string;
@@ -24,5 +31,6 @@ export type MoveTask = {
   date: string;
   rooms: string[];
   boxes: Box[];
+  countAdjustments?: CountAdjustment[]; // 总箱数手动校准记录（旧数据可能没有）
   createdAt: number;
 };

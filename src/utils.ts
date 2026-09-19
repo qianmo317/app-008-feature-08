@@ -9,6 +9,12 @@ export function todayStr(): string {
   return new Date().toISOString().split('T')[0];
 }
 
+export function formatDateTime(ts: number): string {
+  const d = new Date(ts);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export function generateBoxCode(task: MoveTask, roomTo: string): string {
   const prefix = roomTo.charAt(0).toUpperCase();
   const sameRoomBoxes = task.boxes.filter((b) => b.roomTo === roomTo);
@@ -124,4 +130,18 @@ export function roomProgress(task: MoveTask, room: string): { total: number; unp
     unpacked: boxes.filter((b) => b.status === 'unpacked').length,
     damaged: boxes.filter((b) => b.status === 'damaged').length,
   };
+}
+
+// 总箱数 = 登记的箱子条数 + 人工修正之和
+export function boxCountSummary(task: MoveTask): { registered: number; delta: number; effective: number; adjustCount: number } {
+  const registered = task.boxes.length;
+  const adjustments = task.countAdjustments || [];
+  const delta = adjustments.reduce((sum, a) => sum + a.delta, 0);
+  return { registered, delta, effective: registered + delta, adjustCount: adjustments.length };
+}
+
+// 所有箱子都已卸货核对（到达/拆箱/破损/缺失），视为卸货完成
+export function isUnloadFinished(task: MoveTask): boolean {
+  const done: BoxStatus[] = ['arrived', 'unpacked', 'damaged', 'missing'];
+  return task.boxes.length > 0 && task.boxes.every((b) => done.includes(b.status));
 }

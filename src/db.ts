@@ -1,4 +1,4 @@
-import type { MoveTask, Box } from './types';
+import type { MoveTask, Box, CountAdjustment } from './types';
 
 const DB_NAME = 'MovingBoxTracker';
 const DB_VERSION = 1;
@@ -82,5 +82,12 @@ export async function deleteBox(taskId: string, boxId: string): Promise<void> {
   const task = await getTask(taskId);
   if (!task) throw new Error('Task not found');
   task.boxes = task.boxes.filter((b) => b.id !== boxId);
+  await saveTask(task);
+}
+
+export async function addCountAdjustment(taskId: string, adj: CountAdjustment): Promise<void> {
+  const task = await getTask(taskId);
+  if (!task) throw new Error('Task not found');
+  task.countAdjustments = [...(task.countAdjustments || []), adj];
   await saveTask(task);
 }

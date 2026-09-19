@@ -16,6 +16,13 @@ export type Box = {
   updatedAt: number;
 };
 
+export type CountAdjustment = {
+  id: string;
+  delta: number; // 正数=现场比登记多，负数=比登记少
+  reason: string;
+  createdAt: number;
+};
+
 export type MoveTask = {
   id: string;
   title: string;
@@ -24,5 +31,6 @@ export type MoveTask = {
   date: string;
   rooms: string[];
   boxes: Box[];
+  countAdjustments?: CountAdjustment[];
   createdAt: number;
 };
